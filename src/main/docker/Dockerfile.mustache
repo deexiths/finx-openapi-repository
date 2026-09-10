@@ -1,0 +1,16 @@
+FROM {{baseImage}}
+LABEL service={{serviceName}}
+WORKDIR {{workdir}}
+RUN apk update && \
+    apk add --no-cache curl && \
+    apk add --no-cache busybox-extras
+COPY {{jarSource}} {{workdir}}/app.jar
+EXPOSE {{appPort}}
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+#RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+#USER appuser
+
+HEALTHCHECK --interval={{healthInterval}} --timeout={{healthTimeout}} --start-period={{healthStartPeriod}} --retries={{healthRetries}} \
+  CMD curl -f http://localhost:{{healthPort}}{{healthPath}} || exit 1
+

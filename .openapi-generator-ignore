@@ -1,0 +1,6 @@
+# Prevent the OpenAPI Generator (spring generator) from overwriting or
+# emitting build files that belong to Gradle.
+pom.xml
+README.md
+src/main/resources/openapi.yaml
+
