@@ -1,69 +1,80 @@
 plugins {
-	id 'java'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'org.springframework.boot' version '3.5.7'
-	id 'org.openapi.generator' version '7.25.0'
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.springframework.boot' version '3.5.7'
+    id 'org.openapi.generator' version '7.25.0'
 }
 
 group = 'com.example.openapi'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 springBoot {
-	mainClass.set('com.example.openapi.demo.DemoApplication')
+    mainClass.set('com.example.openapi.demo.DemoApplication')
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-	implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 openApiGenerate {
     generatorName = 'spring'
-    inputSpec = "$projectDir/src/main/resources/spec/api-spec.yaml".toString()
-    outputDir = "$buildDir/generated".toString()
+
+    inputSpec = "$projectDir/src/main/resources/spec/api-spec.yaml"
+    outputDir = "$buildDir/generated"
+
     apiPackage = 'com.example.openapi.demo.api'
     modelPackage = 'com.example.openapi.demo.model'
-    globalProperties = [
-            apiTests: 'false',
-            modelTests: 'false',
-            apiDocs: 'true',
-            modelDocs: 'true'
-    ]
+    invokerPackage = 'com.example.openapi.demo'
+    templateDir = "$projectDir/src/main/resources/templates".toString()
+
+
     configOptions = [
-            library: 'spring-boot',
-            interfaceOnly: 'false',
-            delegatePattern: 'true',
-            useSpringBoot3: 'true',
-            useJakartaEe: 'true',
-            skipDefaultInterface: 'false'
+            useSpringBoot3         : 'true',
+            useJakartaEe           : 'true',
+            delegatePattern        : 'true',
+            interfaceOnly          : 'false',
+            dateLibrary            : 'java8',
+            useBeanValidation      : 'true',
+            performBeanValidation  : 'true',
+            generateBuilders       : 'true',
+            hideGenerationTimestamp: 'true'
+    ]
+
+    globalProperties = [
+            apiDocs   : 'false',
+            modelDocs : 'false',
+            apiTests  : 'false',
+            modelTests: 'false'
     ]
 }
 
+
 sourceSets {
-	main {
-		java {
-			srcDir "$buildDir/generated/src/main/java"
-		}
-	}
+    main {
+        java {
+            srcDir "$buildDir/generated/src/main/java"
+        }
+    }
 }
 
 compileJava.dependsOn tasks.openApiGenerate
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
